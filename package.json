@@ -1,0 +1,43 @@
+{
+  "name": "todo-hw",
+  "main": "server.js",
+  "dependencies": {
+    "express": "~4.14.0",
+    "ejs": "~2.5.2",
+    "mongoose": "~4.6.1",
+    "passport": "~0.3.2",
+    "passport-local": "~1.0.0",
+    "passport-facebook": "~2.1.1",
+    "passport-twitter": "~1.0.4",
+    "passport-google-oauth": "~1.0.0",
+    "connect-flash": "~0.1.1",
+    "bcrypt-nodejs": "latest",
+    "morgan": "~1.7.0",
+    "body-parser": "~1.15.2",
+    "cookie-parser": "~1.4.3",
+    "method-override": "~2.3.6",
+    "express-session": "~1.14.1"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "description": "",
+  "version": "1.0.0",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ducistheboss/todo.git"
+  },
+  "keywords": [
+    "homework",
+    "cpsc213",
+    "kyle",
+    "jense"
+  ],
+  "author": "Duc Le",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ducistheboss/todo/issues"
+  },
+  "homepage": "https://github.com/ducistheboss/todo#readme"
+}
