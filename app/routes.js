@@ -105,6 +105,24 @@ module.exports = function(app, passport) {
 	            });
           });
 
+          // task > TOOGLE
+          app.get('/task/toogle', function(req, res) {
+
+          	console.log('Completing task. Id: ', req.query.id);
+
+          	Task.findById(req.query.id, function(err, toogledTask) {
+          		if(err || !toogledTask) {
+          			console.log('Error finding task on database.');
+          			res.redirect('/task');
+          		}
+          		else {
+          			console.log("Method called.");
+          			toogledTask.toogleTask();
+          			res.redirect('/task');
+          		}
+          	});
+          });
+
 };
 
 // route middleware to ensure user is logged in

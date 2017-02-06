@@ -14,4 +14,16 @@ var taskSchema = mongoose.Schema({
 
 });
 
+//This method will be responsible for task toogle.
+taskSchema.methods.toogleTask = function(err) {
+	if(!err) {
+		this.isComplete = !(this.isComplete);
+		this.save();
+	}
+	else {
+		console.log('Error completing a task.');
+	}
+	return;
+};
+
 module.exports = mongoose.model('task', taskSchema);
