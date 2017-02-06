@@ -1,1 +1,10 @@
-body         { padding-top:40px; }
+html {
+  overflow-y:scroll;
+}
+
+body {
+  padding-top:40px;
+}
+
+#todo-list 				{ margin-bottom:30px; }
+#todo-form 	 			{ margin-bottom:50px; }
