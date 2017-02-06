@@ -1,95 +1,95 @@
-  <% include header.ejs %>
+<% include header.ejs %>
 
-<body>
+<div class="container">
 
-  <div class="container">
+  <div class="page-header text-center">
+      <h1><span class="fa fa-sticky-note"></span> Social Todo App</h1>
+      <div class="col-sm-6 offset-sm-3">
+        Welcome, <%= user.name %>. <a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
+      </div>
+  </div>
 
-    <div class="page-header text-center">
-        <h1><span class="fa fa-sticky-note"></span> Social Todo App</h1>
-        <div class="col-sm-6 offset-sm-3">
-          Welcome, <%= user.name %>. <a href="/logout"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a>
-        </div>
+  <div class="row mt-4">
+    <div class="col-sm-6">
+      <form action="/task/create" method="post">
+          <div class="form-group">
+              <label>Task*</label>
+              <input type="text" class="form-control" name="title" maxlength="500" required>
+          </div>
+          <div class="form-group">
+              <label>Description</label>
+              <input type="text" class="form-control" name="description" maxlength="5000">
+          </div>
+          <div class="form-group">
+              <label>Collaborator(s)</label>
+              <input type="email" class="form-control" name="collaborator1">
+              <input type="email" class="form-control" name="collaborator2">
+              <input type="email" class="form-control" name="collaborator3">
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+      </form>
     </div>
 
-    <div class="row mt-4">
-      <div class="col-sm-6">
-        <form action="/task/create" method="post">
-            <div class="form-group">
-                <label>Task*</label>
-                <input type="text" class="form-control" name="title" maxlength="500" required>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" class="form-control" name="description" maxlength="5000">
-            </div>
-            <div class="form-group">
-                <label>Collaborator(s)</label>
-                <input type="email" class="form-control" name="collaborator1">
-                <input type="email" class="form-control" name="collaborator2">
-                <input type="email" class="form-control" name="collaborator3">
-            </div>
-            <button type="submit" class="btn btn-primary">Add Task</button>
-        </form>
-      </div>
+    <!-- TODO LIST -->
+    <div class="col-sm-6">
+      <!-- LOOP OVER THE TODOS IN $scope.todos -->
+        <label>You have
+          <% if (task.length == 0) { %>
+            <span class="badge badge-primary"> 0 task.</span>
+          <% } %>
+          <% if (task.length == 1) { %>
+            <span class="badge badge-primary"> <%= task.length%> task.</span>
+          <% } %>
+          <% if (task.length > 1) { %>
+            <span class="badge badge-primary"> <%= task.length%> tasks.</span>
+          <% } %>
+        </label>
+        <ul class="list-group">
+          <% task.forEach( function( task ){ %>
+            <li class="list-group-item">
 
-      <!-- TODO LIST -->
-      <div class="col-sm-6">
-        <!-- LOOP OVER THE TODOS IN $scope.todos -->
-          <label>You have
-            <% if (task.length == 0) { %>
-              <span class="badge badge-primary"> 0 task.</span>
-            <% } %>
-            <% if (task.length == 1) { %>
-              <span class="badge badge-primary"> <%= task.length%> task.</span>
-            <% } %>
-            <% if (task.length > 1) { %>
-              <span class="badge badge-primary"> <%= task.length%> tasks.</span>
-            <% } %>
-          </label>
-          <ul class="list-group">
-            <% task.forEach( function( task ){ %>
-              <li class="list-group-item">
+              <!-- Toogle button -->
+              <span class="col-sm-1">
+                <% if (task.isComplete == false) { %>
+                  <a href="/task/toogle?id=<%=task.id%>">
+                    <span class="fa fa-flag-o"></span>
+                  </a>
+                <% } else { %>
+                  <a href="/task/toogle?id=<%=task.id%>">
+                    <span class="fa fa-flag"></span>
+                  </a>
+                <% } %>
+              </span>
 
-                <!-- Toogle button -->
-                <span class="col-sm-1">
-                  <% if (task.isComplete == false) { %>
-                    <a href="/task/toogle?id=<%=task.id%>">
-                      <span class="fa fa-flag-o"></span>
-                    </a>
-                  <% } else { %>
-                    <a href="/task/toogle?id=<%=task.id%>">
-                      <span class="fa fa-flag"></span>
-                    </a>
-                  <% } %>
-                </span>
+              <!-- Task title -->
+              <span class="col-sm-10">
+                <% if (task.isComplete == false) { %>
+                  <%= task.title %>
+                <% } else { %>
+                  <strike> <%= task.title %> </strike>
+                <% } %>
+              </span>
 
-                <!-- Task title -->
-                <span class="col-sm-10">
-                  <% if (task.isComplete == false) { %>
-                    <%= task.title %>
-                  <% } else { %>
-                    <strike> <%= task.title %> </strike>
-                  <% } %>
-                </span>
+              <!-- Remove button -->
+              <span class="col-sm-1">
+                <% if (user.email == task.owner) { %>
+                  <a href="/task/remove?id=<%=task.id%>">
+                    <span class="fa fa-trash"></span>
+                  </a>
+                <% } %>
+              </span>
 
-                <!-- Remove button -->
-                <span class="col-sm-1">
-                  <% if (user.email == task.owner) { %>
-                    <a href="/task/remove?id=<%=task.id%>">
-                      <span class="fa fa-trash"></span>
-                    </a>
-                  <% } %>
-                </span>
+              <div class="col-sm-10 offset-sm-1 text-muted"> <%= task.description %> </div>
 
-              </li>
+            </li>
 
-            <% }); %>
+          <% }); %>
 
-          </ul>
-
-      </div>
+        </ul>
 
     </div>
+
+  </div>
 
 </div>
 
