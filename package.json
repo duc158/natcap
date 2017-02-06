@@ -25,6 +25,7 @@
   "description": "",
   "version": "1.0.0",
   "devDependencies": {
+    "dotenv": "^4.0.0",
     "nodemon": "^1.11.0"
   },
   "repository": {
