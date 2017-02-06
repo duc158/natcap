@@ -24,7 +24,9 @@
   },
   "description": "",
   "version": "1.0.0",
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ducistheboss/todo.git"
