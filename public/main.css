@@ -3,7 +3,7 @@ html {
 }
 
 body {
-  background: url('img/bg.jpg') repeat;
+  background-color: #C8C8C8;
   background-size: 100%;
 
   padding-top:80px;
