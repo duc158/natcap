@@ -210,30 +210,23 @@ app.post('/task/create', function (req, res) {
 
 });
 
+app.post('/tasks/:id/:action(complete|incomplete)', function(req, res) {
 
-app.get('/task/complete', function(req, res) {
-
-	console.log('Completing task. Id: ', req.query.id);
-
-	task.findById(req.query.id, function(err, completedTask) {
+	Tasks.findById(req.params.id, function(err, completedTask) {
 		if(err || !completedTask) {
-			console.log('Error finding task on database.');
+      console.log('Error finding task on database.');
 			res.redirect('/');
 		}
 		else {
-			console.log("Method called.");
 			completedTask.completeTask();
 			res.redirect('/');
 		}
 	});
 });
 
+app.post('/tasks/:id/delete', function(req, res) {
 
-
-app.get('/task/remove', function(req, res) {
-	console.log('Removing task. Id: ', req.query.id);
-
-	task.findById(req.query.id, function(err, taskToRemove) {
+	Tasks.findById(req.params.id, function(err, taskToRemove) {
 		if(err || !taskToRemove) {
 			console.log('Error finding task on database.');
 			res.redirect('/');

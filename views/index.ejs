@@ -27,7 +27,25 @@
     <ul class="tasks">
       <% if (locals.task) { %>
         <% task.forEach(function(task) { %>
-          <li class="task"><%=task.name%></li>
+            <% if (!task.isComplete) { %>
+              <li class="task">
+                <span class="task-title"><%=task.name%></span>
+                <form method="post" action="/tasks/<%=task.id%>/complete">
+                  <input type="submit" name="toggle" class="toggle" value="Mark complete">
+                </form>
+            <% } else { %>
+              <li class="task completed">
+                <span class="task-title text-muted"><%=task.name%></span>
+                <form method="post" action="/tasks/<%=task.id%>/incomplete">
+                  <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
+                </form>
+            <% } %>
+            <% if (task.owner == currentUser.id) { %>
+              <form method="post" action="/tasks/<%=task.id%>/delete">
+                <input type="submit" name="delete" class="delete" value="delete">
+              </form>
+            <% } %>
+          </li>
         <% }); %>
       <% } %>
     </ul>
