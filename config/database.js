@@ -1,6 +1,6 @@
 // config/database.js
 module.exports = {
 
-    'url' : 'mongodb://admin:pw@ds139979.mlab.com:39979/todohw'
+    'url' : 'mongodb://social-todo:pw@ds139979.mlab.com:39979/todohw'
 
 };

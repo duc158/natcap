@@ -1,53 +1,202 @@
-// server.js
+'use strict';
 
-// set up ======================================================================
-// get all the tools we need
-var express  = require('express');
-var app      = express();
-var port     = process.env.PORT || 5000;
-var mongoose = require('mongoose');
-var passport = require('passport');
-var flash    = require('connect-flash');
-
-var morgan       = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser   = require('body-parser');
-var session      = require('express-session');
-var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
-
-var configDB = require('./config/database.js');
+const express = require('express');
+const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoDBStore = require('connect-mongodb-session')(session);
+const mongoose = require('mongoose');
+const validator = require('validator');
 
 // configuration ===============================================================
+const configDB = require('./config/database.js');
 mongoose.connect(configDB.url); // connect to our database
 
-require('./config/passport')(passport); // pass passport for configuration
-
-
-// set up our express application
-app.use(morgan('dev')); // log every request to the console
-app.use(cookieParser()); // read cookies (needed for auth)
+const app = express();
+const port = process.env.PORT || 5000;
 app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
-app.use(methodOverride());
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express.static(__dirname + '/public'));
 
-// required for passport
-app.use(session({
-    secret: 'ilovescotchscotchyscotchscotch', // session secret
-    resave: true,
-    saveUninitialized: true
+var Users = require('./models/user.js');
+var Tasks = require('./models/task.js');
+
+// Configure our app
+const store = new MongoDBStore({
+  uri: configDB.url,
+  collection: 'sessions',
+});
+
+app.use(bodyParser.urlencoded({
+  extended: true,
 }));
 
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(session({
+  secret: 'thisisasecretsession',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    secure: 'auto',
+  },
+  store,
+}));
 
-// routes ======================================================================
-require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+function isLoggedIn(req, res, next) {
+	if(res.locals.currentUser) {
+    res.locals.currentUser = user;
+    next();
+	}
+}
 
-// launch ======================================================================
+app.use(function(req, res, next) {;
+	if(req.session.userId) {
+		Users.findById(req.session.userId, function(err, user) {
+			if(!err) {
+				res.locals.currentUser = user;
+			}
+			next();
+		});
+	}
+	else {
+		next();
+	}
+});
+
+function loadUserTasks(req, res, next) {
+  // Removed
+  next();
+}
+
+app.get('/', loadUserTasks , function (req, res) {
+	res.render('index.ejs');
+});
+
+app.post('/user/login', function (req, res) {
+	var user = Users.findOne({email: req.body.email}, function(err, user) {
+		if(err || !user) {
+			res.render('index', {errors: "Invalid email address"});
+			return;
+		}
+
+		user.comparePassword(req.body.password, function(err, isMatch) {
+			if(err || !isMatch){
+				return res.render('index', {errors: 'Invalid password'});
+	   		}
+		   	else{
+        return res.render('index.ejs', { user });
+		   	}
+		});
+	});
+});
+
+app.post('/user/register', function (req, res) {
+  if(!validator.isEmail(req.body.email)) {
+		return res.render('index.ejs', { errors: 'Bad email'});
+	}
+
+  if(req.body.email.length < 1 || req.body.email.length > 50) {
+		return res.render('index.ejs', { errors: 'Bad email'});
+	}
+
+  if(req.body.name.length < 1 || req.body.name.length > 50) {
+    return res.render('index.ejs', { errors: 'Bad name'});
+  }
+
+  if(req.body.password.length < 1 || req.body.password.length > 50) {
+    return res.render('index.ejs', { errors: 'Bad password'});
+  }
+
+  var newUser = new Users();
+	newUser.name = req.body.name;
+	newUser.email = req.body.email;
+	newUser.hashed_password = req.body.password;
+
+  newUser.save(function(err, user){
+
+    if(user && !err){
+      return res.render('index.ejs', { user });
+  	}
+  	var errors = "Error registering you.";
+
+  });
+
+// end of Register post
+});
+
+//Everything below this can only be done by a logged in user.
+//This middleware will enforce that.
+/*
+app.use(isLoggedIn);
+
+app.post('/task/create', function (req, res) {
+	var newTask = new task();
+
+	newTask.owner = res.locals.currentUser;
+	newTask.title = req.body.title;
+	newTask.description = req.body.description;
+	newTask.collaborator1 = req.body.collaborator1;
+	newTask.collaborator2 = req.body.collaborator2;
+	newTask.collaborator3 = req.body.collaborator3;
+	newTask.isComplete = false;
+
+	console.log("Creating task...\n");
+	newTask.save(function(err, task) {
+		if(err || !task) {
+			console.log('Error saving task to the database.');
+			res.render('index', { errors: 'Error saving task to the database.'} );
+		}
+		else {
+			// console.log('New task added: ', task.title);
+			res.redirect('/');
+		}
+	});
+
+
+});
+
+
+app.get('/task/complete', function(req, res) {
+
+	console.log('Completing task. Id: ', req.query.id);
+
+	task.findById(req.query.id, function(err, completedTask) {
+		if(err || !completedTask) {
+			console.log('Error finding task on database.');
+			res.redirect('/');
+		}
+		else {
+			console.log("Method called.");
+			completedTask.completeTask();
+			res.redirect('/');
+		}
+	});
+});
+
+
+
+app.get('/task/remove', function(req, res) {
+	console.log('Removing task. Id: ', req.query.id);
+
+	task.findById(req.query.id, function(err, taskToRemove) {
+		if(err || !taskToRemove) {
+			console.log('Error finding task on database.');
+			res.redirect('/');
+		}
+		else {
+			taskToRemove.remove();
+			res.redirect('/');
+		}
+	});
+});
+*/
+
+app.get('/user/logout', function(req, res){
+  req.session.destroy(function(){
+    res.redirect('/');
+  });
+});
+
 app.listen(port);
 console.log('The magic happens on port ' + port);

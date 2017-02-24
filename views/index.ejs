@@ -1,23 +1,49 @@
-<% include header.ejs %>
+<html>
 
-  <div class="container">
+<head>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+</head>
 
-      <div class="jumbotron text-center">
-          <h1><span class="fa fa-lock"></span> Work Together</h1>
-          <small>An exercise for cpsc213 at Yale</small>
+<body>
 
-          <p id="credit"> Special thanks to <a href="https://scotch.io">Scotch.io</a> for the awesome tutorials</p>
-
-          <p>Login or Register with:</p>
-          <p class="col-sm-12">
-            <a href="/login" class="btn btn-success">Login</a>
-            <a href="/signup" class="btn btn-primary">Signup</a>
-          </p>
-
-      </div>
-
+  <div class="col-sm-12">
+    <h1>Social Web Todo</h1>
   </div>
 
-</body>
+  <div class="col-sm-12">
+    <% if (locals.errors) { %>
+      <p class="errors alert"><%= errors %></p>
+    <% } else { %>
+      <p>No errors so far</p>
+    <% } %>
+  </div>
 
+  <% if (locals.user) { %>
+    <div class="col-sm-12">
+      <span class="welcome"> Welcome, <%= user.name %> <span><a href="/user/logout" class="logout">Logout</a>
+    </div>
+  <% } else { %>
+    <div class="col-sm-12">
+      <h2>LOGIN</h2>
+      <form class="login" action="/user/login" method="POST">
+        <input name="email" id="email" type="text" placeholder="email">
+        <input name="password"  id="password" type="text" placeholder="password">
+        <input type="submit"  class="log-in-submit">
+      </form>
+    </div>
+
+    <div class="col-sm-12">
+      <h2>SIGN UP</h2>
+      <form class="register" action="/user/register" method="POST" class="signup-form" style="display: block;">
+        <input name="name" type="text" class="text-input" placeholder="first &amp; last name">
+        <input name="email" type="text" class="text-input" placeholder="email">
+        <input name="password" type="password" class="text-input" placeholder="password">
+        <input name="passwordConfirmation" type="password" class="text-input" placeholder="password confirmation">
+        <input class="sign-up-submit" type="submit">
+      </form>
+    </div>
+  <% } %>
+
+</body>
 </html>
