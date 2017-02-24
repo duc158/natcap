@@ -23,6 +23,20 @@
     <div class="col-sm-12">
       <span class="welcome"> Welcome, <%= user.name %> <span><a href="/user/logout" class="logout">Logout</a>
     </div>
+    <div class="col-sm-12">
+      <h4>Add a new task</h4>
+      <form class="createTask" action="/task/create" method="POST">
+        <label for="name">Task name</label>
+        <input name="name" type="text"><br>
+        <label for="description">Task Description</label>
+        <input name="description" type="text"><br>
+        Collaborators<br>
+        <input name="collaborator1" type="email"><br>
+        <input name="collaborator2" type="email"><br>
+        <input name="collaborator3" type="email"><br>
+        <input type="submit" class="create-task-submit">
+      </form>
+    </div>
   <% } else { %>
     <div class="col-sm-12">
       <h2>LOGIN</h2>

@@ -43,13 +43,6 @@ app.use(session({
   store,
 }));
 
-function isLoggedIn(req, res, next) {
-	if(res.locals.currentUser) {
-    res.locals.currentUser = user;
-    next();
-	}
-}
-
 app.use(function(req, res, next) {;
 	if(req.session.userId) {
 		Users.findById(req.session.userId, function(err, user) {
@@ -125,12 +118,9 @@ app.post('/user/register', function (req, res) {
 // end of Register post
 });
 
-//Everything below this can only be done by a logged in user.
-//This middleware will enforce that.
-/*
-app.use(isLoggedIn);
-
 app.post('/task/create', function (req, res) {
+
+  /*
 	var newTask = new task();
 
 	newTask.owner = res.locals.currentUser;
@@ -152,6 +142,7 @@ app.post('/task/create', function (req, res) {
 			res.redirect('/');
 		}
 	});
+  */
 
 
 });
@@ -190,7 +181,6 @@ app.get('/task/remove', function(req, res) {
 		}
 	});
 });
-*/
 
 app.get('/user/logout', function(req, res){
   req.session.destroy(function(){
