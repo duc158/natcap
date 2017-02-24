@@ -19,12 +19,21 @@
     <% } %>
   </div>
 
-  <% if (locals.user) { %>
+  <% if (locals.currentUser) { %>
     <div class="col-sm-12">
-      <span class="welcome"> Welcome, <%= user.name %> <span><a href="/user/logout" class="logout">Logout</a>
+      <span class="welcome"> Welcome, <%= currentUser.name %> <span><a href="/user/logout" class="logout">Logout</a>
+    </div>
+    <div>
+    <ul class="tasks">
+      <% if (locals.task) { %>
+        <% task.forEach(function(task) { %>
+          <li class="task"><%=task.name%></li>
+        <% }); %>
+      <% } %>
+    </ul>
     </div>
     <div class="col-sm-12">
-      <h4>Add a new task</h4>
+      <h2>Add a new task</h2>
       <form class="createTask" action="/task/create" method="POST">
         <label for="name">Task name</label>
         <input name="name" type="text"><br>

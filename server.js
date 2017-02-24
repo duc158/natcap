@@ -43,6 +43,13 @@ app.use(session({
   store,
 }));
 
+function isLoggedIn(req, res, next) {
+	if(res.locals.currentUser) {
+		next();
+	}
+
+}
+
 app.use(function(req, res, next) {;
 	if(req.session.userId) {
 		Users.findById(req.session.userId, function(err, user) {
@@ -58,8 +65,26 @@ app.use(function(req, res, next) {;
 });
 
 function loadUserTasks(req, res, next) {
-  // Removed
-  next();
+	if(!res.locals.currentUser) {
+		return next();
+	}
+
+	Tasks.find({ $or:[
+			{owner: res.locals.currentUser},
+			{collaborator1: res.locals.currentUser.email},
+			{collaborator2: res.locals.currentUser.email},
+			{collaborator3: res.locals.currentUser.email}
+		]}, function(err, task) {
+      if(!err) {
+  			res.locals.task = task;
+  		}
+  		else {
+  			console.log('Error loading task.');
+  			res.render('index', { errors: 'Error loading task.'} );
+  		}
+  		next();
+	  }
+  );
 }
 
 app.get('/', loadUserTasks , function (req, res) {
@@ -73,15 +98,22 @@ app.post('/user/login', function (req, res) {
 			return;
 		}
 
-		user.comparePassword(req.body.password, function(err, isMatch) {
+    user.comparePassword(req.body.password, function(err, isMatch) {
 			if(err || !isMatch){
-				return res.render('index', {errors: 'Invalid password'});
+				res.render('index', {errors: 'Invalid password'});
+				console.log('\n\nInvalid password.\n\n');
+				// res.render('index', {errors: 'Invalid password'});
+				return;
 	   		}
 		   	else{
-        return res.render('index.ejs', { user });
+				req.session.userId = user._id;
+				res.redirect('/');
+				return;
 		   	}
+
 		});
 	});
+
 });
 
 app.post('/user/register', function (req, res) {
@@ -109,7 +141,9 @@ app.post('/user/register', function (req, res) {
   newUser.save(function(err, user){
 
     if(user && !err){
-      return res.render('index.ejs', { user });
+      req.session.userId = user._id;
+      res.redirect('/');
+      return;
   	}
   	var errors = "Error registering you.";
 
@@ -118,32 +152,61 @@ app.post('/user/register', function (req, res) {
 // end of Register post
 });
 
+app.get('/user/logout', function(req, res){
+  req.session.destroy(function(){
+    res.redirect('/');
+  });
+});
+
+//Everything below this can only be done by a logged in user.
+//This middleware will enforce that.
+
+app.use(isLoggedIn);
+
 app.post('/task/create', function (req, res) {
 
-  /*
-	var newTask = new task();
+  if(req.body.name.length < 1 || req.body.name.length > 50) {
+    return res.render('index.ejs', { errors: 'Bad title'});
+  }
+
+  if(req.body.collaborator1.length > 1) {
+    if(!validator.isEmail(req.body.collaborator1)) {
+  		return res.render('index.ejs', { errors: 'Bad collaborator email'});
+  	}
+  }
+
+  if(req.body.collaborator2.length > 1) {
+    if(!validator.isEmail(req.body.collaborator2)) {
+      return res.render('index.ejs', { errors: 'Bad collaborator email'});
+    }
+  }
+
+  if(req.body.collaborator3.length > 1) {
+    if(!validator.isEmail(req.body.collaborator3)) {
+      return res.render('index.ejs', { errors: 'Bad collaborator email'});
+    }
+  }
+
+	var newTask = new Tasks();
 
 	newTask.owner = res.locals.currentUser;
-	newTask.title = req.body.title;
+	newTask.name = req.body.name;
 	newTask.description = req.body.description;
-	newTask.collaborator1 = req.body.collaborator1;
-	newTask.collaborator2 = req.body.collaborator2;
-	newTask.collaborator3 = req.body.collaborator3;
+  newTask.collaborator1 = req.body.collaborator1;
+  newTask.collaborator2 = req.body.collaborator2;
+  newTask.collaborator3 = req.body.collaborator3;
 	newTask.isComplete = false;
 
-	console.log("Creating task...\n");
-	newTask.save(function(err, task) {
-		if(err || !task) {
-			console.log('Error saving task to the database.');
-			res.render('index', { errors: 'Error saving task to the database.'} );
-		}
-		else {
-			// console.log('New task added: ', task.title);
-			res.redirect('/');
-		}
-	});
-  */
+  newTask.save(function(err, task){
 
+    if(task && !err){
+      if(err || !task) {
+  			res.render('index', { errors: 'Error saving task to the database.'} );
+  		} else {
+  			res.redirect('/');
+  		}
+    }
+  });
 
 });
 
@@ -180,12 +243,6 @@ app.get('/task/remove', function(req, res) {
 			res.redirect('/');
 		}
 	});
-});
-
-app.get('/user/logout', function(req, res){
-  req.session.destroy(function(){
-    res.redirect('/');
-  });
 });
 
 app.listen(port);
