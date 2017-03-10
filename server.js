@@ -6,19 +6,23 @@ const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const mongoose = require('mongoose');
 const validator = require('validator');
+const favicon = require('serve-favicon');
 
 // configuration ===============================================================
 const configDB = require('./config/database.js');
 mongoose.connect(configDB.url); // connect to our database
 
 const app = express();
+const host = process.env.IP || '0.0.0.0';
 const port = process.env.PORT || 5000;
+
 app.use(bodyParser.json()); // get information from html forms
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express.static(__dirname + '/public'));
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 
 var Users = require('./models/user.js');
 var Tasks = require('./models/task.js');
@@ -238,5 +242,11 @@ app.post('/tasks/:id/delete', function(req, res) {
 	});
 });
 
-app.listen(port);
-console.log('The magic happens on port ' + port);
+// server start
+var server = app.listen(port, host, function () {
+  console.log(
+    'Example app listening at http://%s:%s',
+    server.address().address,
+    server.address().port
+  );
+});

@@ -1,90 +1,96 @@
-<html>
+<% include header.ejs %>
 
-<head>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
-</head>
+  <div class="container">
+    <div class="col-sm-12">
+      <h1>Social Web Todo</h1>
+    </div>
 
-<body>
+    <div class="col-sm-12">
+      <% if (locals.errors) { %>
+        <p class="errors alert"><%= errors %></p>
+      <% } else { %>
+        <p>No errors so far</p>
+      <% } %>
+    </div>
 
-  <div class="col-sm-12">
-    <h1>Social Web Todo</h1>
-  </div>
-
-  <div class="col-sm-12">
-    <% if (locals.errors) { %>
-      <p class="errors alert"><%= errors %></p>
+    <% if (locals.currentUser) { %>
+      <div class="col-sm-12">
+        <span class="welcome"> Welcome, <%= currentUser.name %> <span><a href="/user/logout" class="logout">Logout</a>
+      </div>
+      <div>
+      <ul class="tasks">
+        <% if (locals.task) { %>
+          <% task.forEach(function(task) { %>
+              <% if (!task.isComplete) { %>
+                <li class="task">
+                  <span class="task-title"><%=task.name%></span>
+                  <form method="post" action="/tasks/<%=task.id%>/complete">
+                    <input type="submit" name="toggle" class="toggle" value="Mark complete">
+                  </form>
+              <% } else { %>
+                <li class="task completed">
+                  <span class="task-title text-muted"><%=task.name%></span>
+                  <form method="post" action="/tasks/<%=task.id%>/incomplete">
+                    <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
+                  </form>
+              <% } %>
+              <% if (task.owner == currentUser.id) { %>
+                <form method="post" action="/tasks/<%=task.id%>/delete">
+                  <input type="submit" name="delete" class="delete" value="delete">
+                </form>
+              <% } %>
+            </li>
+          <% }); %>
+        <% } %>
+      </ul>
+      </div>
+      <div class="col-sm-12">
+        <h2>Add a new task</h2>
+        <form class="createTask" action="/task/create" method="POST">
+          <label for="name">Task name</label>
+          <input name="name" type="text"><br>
+          <label for="description">Task Description</label>
+          <input name="description" type="text"><br>
+          Collaborators<br>
+          <input name="collaborator1" type="email"><br>
+          <input name="collaborator2" type="email"><br>
+          <input name="collaborator3" type="email"><br>
+          <input type="submit" class="create-task-submit">
+        </form>
+      </div>
     <% } else { %>
-      <p>No errors so far</p>
+      <div class="col-sm-12">
+        <h2>LOGIN</h2>
+        <form class="login form-inline" action="/user/login" method="POST">
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input class="form-control" name="email" id="email" type="text" placeholder="email">
+          </div>
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input class="form-control" name="password" id="password" type="text" placeholder="password">
+          </div>
+          <input type="submit" class="log-in-submit btn btn-primary">
+        </form>
+      </div>
+
+      <div class="col-sm-12">
+        <h2>SIGN UP</h2>
+        <form class="register form-inline" action="/user/register" method="POST" class="signup-form">
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input name="name" type="text" class="text-input form-control" placeholder="first and last name">
+          </div>
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input name="email" type="text" class="text-input form-control" placeholder="email">
+          </div>
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input name="password" type="password" class="text-input form-control" placeholder="password">
+          </div>
+          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+            <input name="passwordConfirmation" type="password" class="text-input form-control" placeholder="password confirmation">
+          </div>
+          <input type="submit" class="sign-up-submit btn btn-primary">
+        </form>
+      </div>
     <% } %>
   </div>
 
-  <% if (locals.currentUser) { %>
-    <div class="col-sm-12">
-      <span class="welcome"> Welcome, <%= currentUser.name %> <span><a href="/user/logout" class="logout">Logout</a>
-    </div>
-    <div>
-    <ul class="tasks">
-      <% if (locals.task) { %>
-        <% task.forEach(function(task) { %>
-            <% if (!task.isComplete) { %>
-              <li class="task">
-                <span class="task-title"><%=task.name%></span>
-                <form method="post" action="/tasks/<%=task.id%>/complete">
-                  <input type="submit" name="toggle" class="toggle" value="Mark complete">
-                </form>
-            <% } else { %>
-              <li class="task completed">
-                <span class="task-title text-muted"><%=task.name%></span>
-                <form method="post" action="/tasks/<%=task.id%>/incomplete">
-                  <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
-                </form>
-            <% } %>
-            <% if (task.owner == currentUser.id) { %>
-              <form method="post" action="/tasks/<%=task.id%>/delete">
-                <input type="submit" name="delete" class="delete" value="delete">
-              </form>
-            <% } %>
-          </li>
-        <% }); %>
-      <% } %>
-    </ul>
-    </div>
-    <div class="col-sm-12">
-      <h2>Add a new task</h2>
-      <form class="createTask" action="/task/create" method="POST">
-        <label for="name">Task name</label>
-        <input name="name" type="text"><br>
-        <label for="description">Task Description</label>
-        <input name="description" type="text"><br>
-        Collaborators<br>
-        <input name="collaborator1" type="email"><br>
-        <input name="collaborator2" type="email"><br>
-        <input name="collaborator3" type="email"><br>
-        <input type="submit" class="create-task-submit">
-      </form>
-    </div>
-  <% } else { %>
-    <div class="col-sm-12">
-      <h2>LOGIN</h2>
-      <form class="login" action="/user/login" method="POST">
-        <input name="email" id="email" type="text" placeholder="email">
-        <input name="password"  id="password" type="text" placeholder="password">
-        <input type="submit"  class="log-in-submit">
-      </form>
-    </div>
-
-    <div class="col-sm-12">
-      <h2>SIGN UP</h2>
-      <form class="register" action="/user/register" method="POST" class="signup-form" style="display: block;">
-        <input name="name" type="text" class="text-input" placeholder="first &amp; last name">
-        <input name="email" type="text" class="text-input" placeholder="email">
-        <input name="password" type="password" class="text-input" placeholder="password">
-        <input name="passwordConfirmation" type="password" class="text-input" placeholder="password confirmation">
-        <input class="sign-up-submit" type="submit">
-      </form>
-    </div>
-  <% } %>
-
-</body>
-</html>
+<% include footer.ejs %>
