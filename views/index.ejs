@@ -26,20 +26,26 @@
               <% task.forEach(function(task) { %>
                   <% if (!task.isComplete) { %>
                     <li class="task list-group-item">
-                      <span class="task-title"><%=task.name%></span>
-                      <form method="post" action="/tasks/<%=task.id%>/complete">
-                        <input type="submit" name="toggle" class="toggle" value="Mark complete">
+                      <span class="task-title col-sm-8"><%=task.name%></span>
+                      <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/complete">
+                        <button type="submit" name="toggle" class="toggle btn btn-link">
+                          <i class="fa fa-flag fa-lg" aria-hidden="true"></i>
+                        </button>
                       </form>
                   <% } else { %>
                     <li class="task completed list-group-item">
-                      <span class="task-title text-muted"><%=task.name%></span>
-                      <form method="post" action="/tasks/<%=task.id%>/incomplete">
-                        <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
+                      <span class="task-title col-sm-8"><del><%=task.name%></del></span>
+                      <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/incomplete">
+                        <button type="submit" name="toggle" class="toggle btn btn-link">
+                          <i class="fa fa-plus fa-lg" aria-hidden="true"></i>
+                        </button>
                       </form>
                   <% } %>
                   <% if (task.owner == currentUser.id) { %>
-                    <form method="post" action="/tasks/<%=task.id%>/delete">
-                      <input type="submit" name="delete" class="delete" value="delete">
+                    <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/delete">
+                      <button type="submit" name="delete" class="delete btn btn-link">
+                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                      </button>
                     </form>
                   <% } %>
                 </li>
