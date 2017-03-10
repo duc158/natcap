@@ -7,43 +7,46 @@
 
     <div class="col-sm-12">
       <% if (locals.errors) { %>
-        <p class="errors alert"><%= errors %></p>
+        <p class="errors alert alert-warning"><%= errors %></p>
       <% } else { %>
-        <p>No errors so far</p>
+        <p class="alert alert-success">No errors so far</p>
       <% } %>
     </div>
 
     <% if (locals.currentUser) { %>
+
       <div class="col-sm-12">
         <span class="welcome"> Welcome, <%= currentUser.name %> <span><a href="/user/logout" class="logout">Logout</a>
       </div>
-      <div>
-      <ul class="tasks">
-        <% if (locals.task) { %>
-          <% task.forEach(function(task) { %>
-              <% if (!task.isComplete) { %>
-                <li class="task">
-                  <span class="task-title"><%=task.name%></span>
-                  <form method="post" action="/tasks/<%=task.id%>/complete">
-                    <input type="submit" name="toggle" class="toggle" value="Mark complete">
+
+      <div class="col-sm-12">
+        <ul class="tasks">
+          <% if (locals.task) { %>
+            <% task.forEach(function(task) { %>
+                <% if (!task.isComplete) { %>
+                  <li class="task">
+                    <span class="task-title"><%=task.name%></span>
+                    <form method="post" action="/tasks/<%=task.id%>/complete">
+                      <input type="submit" name="toggle" class="toggle" value="Mark complete">
+                    </form>
+                <% } else { %>
+                  <li class="task completed">
+                    <span class="task-title text-muted"><%=task.name%></span>
+                    <form method="post" action="/tasks/<%=task.id%>/incomplete">
+                      <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
+                    </form>
+                <% } %>
+                <% if (task.owner == currentUser.id) { %>
+                  <form method="post" action="/tasks/<%=task.id%>/delete">
+                    <input type="submit" name="delete" class="delete" value="delete">
                   </form>
-              <% } else { %>
-                <li class="task completed">
-                  <span class="task-title text-muted"><%=task.name%></span>
-                  <form method="post" action="/tasks/<%=task.id%>/incomplete">
-                    <input type="submit" name="toggle" class="toggle" value="Mark incomplete">
-                  </form>
-              <% } %>
-              <% if (task.owner == currentUser.id) { %>
-                <form method="post" action="/tasks/<%=task.id%>/delete">
-                  <input type="submit" name="delete" class="delete" value="delete">
-                </form>
-              <% } %>
-            </li>
-          <% }); %>
-        <% } %>
-      </ul>
+                <% } %>
+              </li>
+            <% }); %>
+          <% } %>
+        </ul>
       </div>
+
       <div class="col-sm-12">
         <h2>Add a new task</h2>
         <form class="createTask" action="/task/create" method="POST">
@@ -58,37 +61,46 @@
           <input type="submit" class="create-task-submit">
         </form>
       </div>
-    <% } else { %>
-      <div class="col-sm-12">
-        <h2>LOGIN</h2>
-        <form class="login form-inline" action="/user/login" method="POST">
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input class="form-control" name="email" id="email" type="text" placeholder="email">
-          </div>
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input class="form-control" name="password" id="password" type="text" placeholder="password">
-          </div>
-          <input type="submit" class="log-in-submit btn btn-primary">
-        </form>
-      </div>
 
-      <div class="col-sm-12">
-        <h2>SIGN UP</h2>
-        <form class="register form-inline" action="/user/register" method="POST" class="signup-form">
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input name="name" type="text" class="text-input form-control" placeholder="first and last name">
-          </div>
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input name="email" type="text" class="text-input form-control" placeholder="email">
-          </div>
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input name="password" type="password" class="text-input form-control" placeholder="password">
-          </div>
-          <div class="input-group mb-2 mr-sm-2 mb-sm-0">
-            <input name="passwordConfirmation" type="password" class="text-input form-control" placeholder="password confirmation">
-          </div>
-          <input type="submit" class="sign-up-submit btn btn-primary">
-        </form>
+    <% } else { %>
+      <div class="row col-sm-12">
+        <div class="col-sm-6">
+          <h2>LOGIN</h2>
+          <form class="login" action="/user/login" method="POST">
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-user-circle" aria-hidden="true"></i></div>
+              <input class="form-control" name="email" id="email" type="text" placeholder="email">
+            </div>
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></div>
+              <input class="form-control" name="password" id="password" type="text" placeholder="password">
+            </div>
+            <input type="submit" class="log-in-submit btn btn-primary">
+          </form>
+        </div>
+
+        <div class="col-sm-6">
+          <h2>SIGN UP</h2>
+          <form class="register" action="/user/register" method="POST" class="signup-form">
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-heart" aria-hidden="true"></i></div>
+              <input name="name" type="text" class="text-input form-control" placeholder="first and last name">
+            </div>
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-envelope" aria-hidden="true"></i></div>
+              <input name="email" type="text" class="text-input form-control" placeholder="email">
+            </div>
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-envelope" aria-hidden="true"></i></div>
+              <input name="password" type="password" class="text-input form-control" placeholder="password">
+            </div>
+            <div class="input-group mb-2 mr-sm-2 mb-sm-2">
+              <div class="input-group-addon"><i class="fa fa-eye" aria-hidden="true"></i></div>
+              <input name="passwordConfirmation" type="password" class="text-input form-control" placeholder="password confirmation">
+            </div>
+            <input type="submit" class="sign-up-submit btn btn-primary">
+          </form>
+        </div>
       </div>
     <% } %>
   </div>
