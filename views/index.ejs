@@ -20,31 +20,33 @@
       </div>
 
       <div class="row mt-4 col-sm-12">
+
         <div class="col-sm-6">
+          <h4>Your tasks</h4>
           <ul class="tasks list-group">
             <% if (locals.task) { %>
               <% task.forEach(function(task) { %>
                   <% if (!task.isComplete) { %>
                     <li class="task list-group-item">
-                      <span class="task-title col-sm-8"><%=task.name%></span>
-                      <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/complete">
+                      <span class="task-title col-sm-6"><%=task.name%></span>
+                      <form class ="col-sm-3" method="post" action="/tasks/<%=task.id%>/complete">
                         <button type="submit" name="toggle" class="toggle btn btn-link">
-                          <i class="fa fa-flag fa-lg" aria-hidden="true"></i>
+                          <small><i class="fa fa-flag" aria-hidden="true"></i> Mark Complete</small>
                         </button>
                       </form>
                   <% } else { %>
                     <li class="task completed list-group-item">
-                      <span class="task-title col-sm-8"><del><%=task.name%></del></span>
-                      <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/incomplete">
+                      <span class="task-title col-sm-6"><del><%=task.name%></del></span>
+                      <form class ="col-sm-3" method="post" action="/tasks/<%=task.id%>/incomplete">
                         <button type="submit" name="toggle" class="toggle btn btn-link">
-                          <i class="fa fa-plus fa-lg" aria-hidden="true"></i>
+                          <small><i class="fa fa-plus" aria-hidden="true"></i> Mark Incomplete</small>
                         </button>
                       </form>
                   <% } %>
                   <% if (task.owner == currentUser.id) { %>
                     <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/delete">
                       <button type="submit" name="delete" class="delete btn btn-link">
-                        <i class="fa fa-trash fa-lg" aria-hidden="true"></i>
+                        <small><i class="fa fa-trash" aria-hidden="true"></i> Delete</small>
                       </button>
                     </form>
                   <% } %>
@@ -53,6 +55,7 @@
             <% } %>
           </ul>
         </div>
+
         <div class="col-sm-6">
           <h4>Add a new task</h4>
           <form class="createTask" action="/task/create" method="POST">
@@ -73,6 +76,7 @@
             <input type="submit" class="create-task-submit btn btn-primary">
           </form>
         </div>
+
       </div>
     <% } else { %>
       <div class="row col-sm-12">
