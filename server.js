@@ -12,7 +12,7 @@ const configDB = require('./config/database.js');
 mongoose.connect(configDB.url); // connect to our database
 
 const app = express();
-const host = process.env.IP || '0.0.0.0';
+const host = process.env.IP || 'localhost';
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json()); // get information from html forms
@@ -241,10 +241,5 @@ app.post('/tasks/:id/delete', function(req, res) {
 });
 
 // server start
-var server = app.listen(port, host, function () {
-  console.log(
-    'Example app listening at http://%s:%s',
-    server.address().address,
-    server.address().port
-  );
-});
+app.listen(host, port);
+console.log('The magic happens on port ' + port);
