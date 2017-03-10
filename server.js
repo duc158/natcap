@@ -22,7 +22,7 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse applica
 
 app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express.static(__dirname + '/public'));
-app.use(favicon(__dirname + '/public/images/favicon.ico'));
+app.use(favicon(__dirname + '/favicon.ico'));
 
 var Users = require('./models/user.js');
 var Tasks = require('./models/task.js');
