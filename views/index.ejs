@@ -44,7 +44,7 @@
                       </form>
                   <% } %>
                   <% if (task.owner == currentUser.id) { %>
-                    <form class ="col-sm-2" method="post" action="/tasks/<%=task.id%>/delete">
+                    <form class ="col-sm-2" method="post" action="/tasks/<%=event.id%>/delete">
                       <button type="submit" name="delete" class="delete btn btn-link">
                         <small><i class="fa fa-trash" aria-hidden="true"></i> Delete</small>
                       </button>
