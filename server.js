@@ -65,22 +65,18 @@ app.use(function(req, res, next) {;
 	}
 });
 
-function loadUserTasks(req, res, next) {
+function loadStudentAssignments(req, res, next) {
 	if(!res.locals.currentUser) {
 		return next();
 	}
 
 	Assignment.find({ $or:[
-			{owner: res.locals.currentUser},
-			{collaborator1: res.locals.currentUser.email},
-			{collaborator2: res.locals.currentUser.email},
-			{collaborator3: res.locals.currentUser.email}
-		]}, function(err, task) {
+			{owner: res.locals.currentUser}
+		]}, function(err, assignment) {
       if(!err) {
-  			res.locals.task = task;
+  			res.locals.assignment = assignment;
   		}
   		else {
-  			console.log('Error loading task.');
   			res.render('index', { errors: 'Error loading task.'} );
   		}
   		next();
@@ -88,7 +84,7 @@ function loadUserTasks(req, res, next) {
   );
 }
 
-app.get('/', loadUserTasks , function (req, res) {
+app.get('/', loadStudentAssignments , function (req, res) {
 	res.render('index.ejs');
 });
 

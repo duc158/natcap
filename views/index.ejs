@@ -10,6 +10,7 @@
 
     <% if (locals.currentUser) { %>
 
+      <!-- Welcome message -->
       <div class="col-sm-12">
         <span class="welcome"> Welcome, <%= currentUser.name %>. <span><a href="/user/logout" class="logout">Logout</a>
       </div>
@@ -17,34 +18,18 @@
       <div class="row mt-4 col-sm-12">
 
         <div class="col-sm-6">
+          <!-- All Assignment -->
           <h4>Submitted Assignment</h4>
-          <ul class="tasks list-group">
-            <% if (locals.task) { %>
-              <% task.forEach(function(task) { %>
-                  <% if (!task.isComplete) { %>
-                    <li class="task list-group-item">
-                      <span class="task-title col-sm-6"><%=task.name%></span>
-                      <form class ="col-sm-3" method="post" action="/tasks/<%=task.id%>/complete">
-                        <button type="submit" name="toggle" class="toggle btn btn-link">
-                          <small><i class="fa fa-flag" aria-hidden="true"></i> Mark Complete</small>
-                        </button>
-                      </form>
-                  <% } else { %>
-                    <li class="task completed list-group-item">
-                      <span class="task-title col-sm-6"><del><%=task.name%></del></span>
-                      <form class ="col-sm-3" method="post" action="/tasks/<%=task.id%>/incomplete">
-                        <button type="submit" name="toggle" class="toggle btn btn-link">
-                          <small><i class="fa fa-plus" aria-hidden="true"></i> Mark Incomplete</small>
-                        </button>
-                      </form>
-                  <% } %>
-                  <% if (task.owner == currentUser.id) { %>
-                    <form class ="col-sm-2" method="post" action="/tasks/<%=event.id%>/delete">
-                      <button type="submit" name="delete" class="delete btn btn-link">
-                        <small><i class="fa fa-trash" aria-hidden="true"></i> Delete</small>
-                      </button>
-                    </form>
-                  <% } %>
+          <ul class="list-group">
+            <% if (locals.assignment) { %>
+              <% assignment.forEach(function(assignment) { %>
+                <li class="list-group-item">
+                  <span class="col-sm-6"><%=assignment.detail%></span>
+                  <form class ="col-sm-3" method="post" action="/assignment/<%=assignment.id%>/delete">
+                    <button type="submit" name="toggle" class="toggle btn btn-link">
+                      <small><i class="fa fa-flag" aria-hidden="true"></i>Delete</small>
+                    </button>
+                  </form>
                 </li>
               <% }); %>
             <% } %>
@@ -55,7 +40,7 @@
           <h4>Submit a new assignment</h4>
           <form class="submitAssignment" action="/assignment/submit" method="POST">
             <div class="form-group">
-              <input class="form-control" name="assignment" type="text" placeholder="Assignment Name">
+              <input class="form-control" name="name" type="text" placeholder="Assignment Name">
             </div>
             <div class="form-group">
               <input class="form-control" name="detail" type="text">
