@@ -22,7 +22,7 @@ app.set('view engine', 'ejs'); // set up ejs for templating
 app.use(express.static(__dirname + '/public'));
 
 var Users = require('./models/user.js');
-var Tasks = require('./models/task.js');
+var Assignment = require('./models/assignment.js');
 
 // Configure our app
 const store = new MongoDBStore({
@@ -70,7 +70,7 @@ function loadUserTasks(req, res, next) {
 		return next();
 	}
 
-	Tasks.find({ $or:[
+	Assignment.find({ $or:[
 			{owner: res.locals.currentUser},
 			{collaborator1: res.locals.currentUser.email},
 			{collaborator2: res.locals.currentUser.email},
@@ -92,152 +92,154 @@ app.get('/', loadUserTasks , function (req, res) {
 	res.render('index.ejs');
 });
 
-app.post('/user/login', function (req, res) {
-	var user = Users.findOne({email: req.body.email}, function(err, user) {
-		if(err || !user) {
-			res.render('index', {errors: "Invalid email address"});
-			return;
-		}
+  // User handle
+  app.post('/user/login', function (req, res) {
+  	var user = Users.findOne({email: req.body.email}, function(err, user) {
+  		if(err || !user) {
+  			res.render('index', {errors: "Invalid email address"});
+  			return;
+  		}
 
-    user.comparePassword(req.body.password, function(err, isMatch) {
-			if(err || !isMatch){
-				res.render('index', {errors: 'Invalid password'});
-				console.log('\n\nInvalid password.\n\n');
-				// res.render('index', {errors: 'Invalid password'});
-				return;
-	   		}
-		   	else{
-				req.session.userId = user._id;
-				res.redirect('/');
-				return;
-		   	}
+      user.comparePassword(req.body.password, function(err, isMatch) {
+  			if(err || !isMatch){
+  				res.render('index', {errors: 'Invalid password'});
+  				console.log('\n\nInvalid password.\n\n');
+  				// res.render('index', {errors: 'Invalid password'});
+  				return;
+  	   		}
+  		   	else{
+  				req.session.userId = user._id;
+  				res.redirect('/');
+  				return;
+  		   	}
 
-		});
-	});
+  		});
+  	});
 
-});
+  });
 
-app.post('/user/register', function (req, res) {
-  if(!validator.isEmail(req.body.email)) {
-		return res.render('index.ejs', { errors: 'Bad email'});
-	}
+  app.post('/user/register', function (req, res) {
+    if(!validator.isEmail(req.body.email)) {
+  		return res.render('index.ejs', { errors: 'Bad email'});
+  	}
 
-  if(req.body.email.length < 1 || req.body.email.length > 50) {
-		return res.render('index.ejs', { errors: 'Bad email'});
-	}
+    if(req.body.email.length < 1 || req.body.email.length > 50) {
+  		return res.render('index.ejs', { errors: 'Bad email'});
+  	}
 
-  if(req.body.name.length < 1 || req.body.name.length > 50) {
-    return res.render('index.ejs', { errors: 'Bad name'});
-  }
+    if(req.body.name.length < 1 || req.body.name.length > 50) {
+      return res.render('index.ejs', { errors: 'Bad name'});
+    }
 
-  if(req.body.password.length < 1 || req.body.password.length > 50) {
-    return res.render('index.ejs', { errors: 'Bad password'});
-  }
+    if(req.body.password.length < 1 || req.body.password.length > 50) {
+      return res.render('index.ejs', { errors: 'Bad password'});
+    }
 
-  var newUser = new Users();
-	newUser.name = req.body.name;
-	newUser.email = req.body.email;
-	newUser.hashed_password = req.body.password;
+    var newUser = new Users();
+  	newUser.name = req.body.name;
+  	newUser.email = req.body.email;
+  	newUser.hashed_password = req.body.password;
 
-  newUser.save(function(err, user){
+    newUser.save(function(err, user){
 
-    if(user && !err){
-      req.session.userId = user._id;
+      if(user && !err){
+        req.session.userId = user._id;
+        res.redirect('/');
+        return;
+    	}
+    	var errors = "Error registering you.";
+
+    });
+
+  // end of Register post
+  });
+
+  app.get('/user/logout', function(req, res){
+    req.session.destroy(function(){
       res.redirect('/');
-      return;
-  	}
-  	var errors = "Error registering you.";
+    });
+  });
+
+  // Everything below this can only be done by a logged in user.
+  // This middleware will enforce that.
+
+  // Assignment Management
+  app.use(isLoggedIn);
+
+  app.post('/task/create', function (req, res) {
+
+    if(req.body.name.length < 1 || req.body.name.length > 50) {
+      return res.render('index.ejs', { errors: 'Bad title'});
+    }
+
+    if(req.body.collaborator1.length > 1) {
+      if(!validator.isEmail(req.body.collaborator1)) {
+    		return res.render('index.ejs', { errors: 'Bad collaborator email'});
+    	}
+    }
+
+    if(req.body.collaborator2.length > 1) {
+      if(!validator.isEmail(req.body.collaborator2)) {
+        return res.render('index.ejs', { errors: 'Bad collaborator email'});
+      }
+    }
+
+    if(req.body.collaborator3.length > 1) {
+      if(!validator.isEmail(req.body.collaborator3)) {
+        return res.render('index.ejs', { errors: 'Bad collaborator email'});
+      }
+    }
+
+  	var newTask = new Tasks();
+
+  	newTask.owner = res.locals.currentUser;
+  	newTask.name = req.body.name;
+  	newTask.description = req.body.description;
+    newTask.collaborator1 = req.body.collaborator1;
+    newTask.collaborator2 = req.body.collaborator2;
+    newTask.collaborator3 = req.body.collaborator3;
+  	newTask.isComplete = false;
+
+    newTask.save(function(err, task){
+
+      if(task && !err){
+        if(err || !task) {
+    			res.render('index', { errors: 'Error saving task to the database.'} );
+    		} else {
+    			res.redirect('/');
+    		}
+      }
+    });
 
   });
 
-// end of Register post
-});
+  // app.post('/tasks/:id/:action(complete|incomplete)', function(req, res) {
+  //
+  // 	Assignment.findById(req.params.id, function(err, completedTask) {
+  // 		if(err || !completedTask) {
+  //       console.log('Error finding task on database.');
+  // 			res.redirect('/');
+  // 		}
+  // 		else {
+  // 			completedTask.completeTask();
+  // 			res.redirect('/');
+  // 		}
+  // 	});
+  // });
 
-app.get('/user/logout', function(req, res){
-  req.session.destroy(function(){
-    res.redirect('/');
-  });
-});
+  app.post('/tasks/:id/delete', function(req, res) {
 
-//Everything below this can only be done by a logged in user.
-//This middleware will enforce that.
-
-app.use(isLoggedIn);
-
-app.post('/task/create', function (req, res) {
-
-  if(req.body.name.length < 1 || req.body.name.length > 50) {
-    return res.render('index.ejs', { errors: 'Bad title'});
-  }
-
-  if(req.body.collaborator1.length > 1) {
-    if(!validator.isEmail(req.body.collaborator1)) {
-  		return res.render('index.ejs', { errors: 'Bad collaborator email'});
-  	}
-  }
-
-  if(req.body.collaborator2.length > 1) {
-    if(!validator.isEmail(req.body.collaborator2)) {
-      return res.render('index.ejs', { errors: 'Bad collaborator email'});
-    }
-  }
-
-  if(req.body.collaborator3.length > 1) {
-    if(!validator.isEmail(req.body.collaborator3)) {
-      return res.render('index.ejs', { errors: 'Bad collaborator email'});
-    }
-  }
-
-	var newTask = new Tasks();
-
-	newTask.owner = res.locals.currentUser;
-	newTask.name = req.body.name;
-	newTask.description = req.body.description;
-  newTask.collaborator1 = req.body.collaborator1;
-  newTask.collaborator2 = req.body.collaborator2;
-  newTask.collaborator3 = req.body.collaborator3;
-	newTask.isComplete = false;
-
-  newTask.save(function(err, task){
-
-    if(task && !err){
-      if(err || !task) {
-  			res.render('index', { errors: 'Error saving task to the database.'} );
-  		} else {
+  	Assignment.findById(req.params.id, function(err, taskToRemove) {
+  		if(err || !taskToRemove) {
+  			console.log('Error finding task on database.');
   			res.redirect('/');
   		}
-    }
+  		else {
+  			taskToRemove.remove();
+  			res.redirect('/');
+  		}
+  	});
   });
-
-});
-
-app.post('/tasks/:id/:action(complete|incomplete)', function(req, res) {
-
-	Tasks.findById(req.params.id, function(err, completedTask) {
-		if(err || !completedTask) {
-      console.log('Error finding task on database.');
-			res.redirect('/');
-		}
-		else {
-			completedTask.completeTask();
-			res.redirect('/');
-		}
-	});
-});
-
-app.post('/tasks/:id/delete', function(req, res) {
-
-	Tasks.findById(req.params.id, function(err, taskToRemove) {
-		if(err || !taskToRemove) {
-			console.log('Error finding task on database.');
-			res.redirect('/');
-		}
-		else {
-			taskToRemove.remove();
-			res.redirect('/');
-		}
-	});
-});
 
 // server start
 app.listen(port);

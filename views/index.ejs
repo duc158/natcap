@@ -1,10 +1,5 @@
 <% include header.ejs %>
 
-  <div class="container">
-    <div class="col-sm-12">
-      <h1>Social Web Todo</h1>
-    </div>
-
     <div class="col-sm-12">
       <% if (locals.errors) { %>
         <p class="errors alert alert-warning"><%= errors %></p>
@@ -16,13 +11,13 @@
     <% if (locals.currentUser) { %>
 
       <div class="col-sm-12">
-        <span class="welcome"> Welcome, <%= currentUser.name %> <span><a href="/user/logout" class="logout">Logout</a>
+        <span class="welcome"> Welcome, <%= currentUser.name %>. <span><a href="/user/logout" class="logout">Logout</a>
       </div>
 
       <div class="row mt-4 col-sm-12">
 
         <div class="col-sm-6">
-          <h4>Your tasks</h4>
+          <h4>Submitted Assignment</h4>
           <ul class="tasks list-group">
             <% if (locals.task) { %>
               <% task.forEach(function(task) { %>
@@ -57,21 +52,13 @@
         </div>
 
         <div class="col-sm-6">
-          <h4>Add a new task</h4>
+          <h4>Submit a new assignment</h4>
           <form class="createTask" action="/task/create" method="POST">
             <div class="form-group">
-              <label for="name">Task name</label>
-              <input class="form-control" name="name" type="text">
+              <input class="form-control" name="assignment" type="text" placeholder="Assignment Name">
             </div>
             <div class="form-group">
-              <label for="description">Task Description</label>
-              <input class="form-control" name="description" type="text">
-            </div>
-            <div class="form-group">
-              <label>Collaborators</label>
-              <input class="form-control" name="collaborator1" type="email">
-              <input class="form-control" name="collaborator2" type="email">
-              <input class="form-control" name="collaborator3" type="email">
+              <input class="form-control" name="detail" type="text">
             </div>
             <input type="submit" class="create-task-submit btn btn-primary">
           </form>
