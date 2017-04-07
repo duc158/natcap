@@ -171,6 +171,7 @@ app.get('/', loadStudentAssignments , function (req, res) {
   	var newAssignment = new Assignment();
 
   	newAssignment.owner = res.locals.currentUser;
+    newAssignment.student = res.locals.currentUser.fullName;
   	newAssignment.name = req.body.name;
   	newAssignment.detail = req.body.detail;
 
@@ -201,15 +202,15 @@ app.get('/', loadStudentAssignments , function (req, res) {
   // 	});
   // });
 
-  app.post('/tasks/:id/delete', function(req, res) {
+  app.post('/assignment/:id/delete', function(req, res) {
 
-  	Assignment.findById(req.params.id, function(err, taskToRemove) {
-  		if(err || !taskToRemove) {
+  	Assignment.findById(req.params.id, function(err, assignmentToRemove) {
+  		if(err || !assignmentToRemove) {
   			console.log('Error finding task on database.');
   			res.redirect('/');
   		}
   		else {
-  			taskToRemove.remove();
+  			assignmentToRemove.remove();
   			res.redirect('/');
   		}
   	});

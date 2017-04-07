@@ -7,6 +7,7 @@ const ObjectId = Schema.ObjectId;
 
 const assignmentSchema = new Schema({
   owner: ObjectId,
+  student: String,
   name: String,
   detail: String,
   grade: String
