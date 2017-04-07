@@ -166,41 +166,19 @@ app.get('/', loadUserTasks , function (req, res) {
   // Assignment Management
   app.use(isLoggedIn);
 
-  app.post('/task/create', function (req, res) {
+  app.post('/assignment/submit', function (req, res) {
 
-    if(req.body.name.length < 1 || req.body.name.length > 50) {
-      return res.render('index.ejs', { errors: 'Bad title'});
-    }
+    // if(req.body.name.length < 1 || req.body.name.length > 50) {
+    //   return res.render('index.ejs', { errors: 'Bad title'});
+    // }
 
-    if(req.body.collaborator1.length > 1) {
-      if(!validator.isEmail(req.body.collaborator1)) {
-    		return res.render('index.ejs', { errors: 'Bad collaborator email'});
-    	}
-    }
+  	var newAssignment = new Assignment();
 
-    if(req.body.collaborator2.length > 1) {
-      if(!validator.isEmail(req.body.collaborator2)) {
-        return res.render('index.ejs', { errors: 'Bad collaborator email'});
-      }
-    }
+  	newAssignment.owner = res.locals.currentUser;
+  	newAssignment.name = req.body.name;
+  	newAssignment.detail = req.body.detail;
 
-    if(req.body.collaborator3.length > 1) {
-      if(!validator.isEmail(req.body.collaborator3)) {
-        return res.render('index.ejs', { errors: 'Bad collaborator email'});
-      }
-    }
-
-  	var newTask = new Tasks();
-
-  	newTask.owner = res.locals.currentUser;
-  	newTask.name = req.body.name;
-  	newTask.description = req.body.description;
-    newTask.collaborator1 = req.body.collaborator1;
-    newTask.collaborator2 = req.body.collaborator2;
-    newTask.collaborator3 = req.body.collaborator3;
-  	newTask.isComplete = false;
-
-    newTask.save(function(err, task){
+    newAssignment.save(function(err, task){
 
       if(task && !err){
         if(err || !task) {
