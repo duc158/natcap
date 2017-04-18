@@ -24,10 +24,10 @@
             <% if (locals.assignment) { %>
               <% assignment.forEach(function(assignment) { %>
                 <li class="list-group-item">
-                  <span class="col-sm-6"><%=assignment.detail%></span>
+                  <span class="col-sm-6"><%=assignment.name%></span>
                   <form class ="col-sm-3" method="post" action="/assignment/<%=assignment.id%>/delete">
                     <button type="submit" name="toggle" class="toggle btn btn-link">
-                      <small><i class="fa fa-flag" aria-hidden="true"></i>Delete</small>
+                      <small>Delete</small>
                     </button>
                   </form>
                 </li>
@@ -43,13 +43,13 @@
               <input class="form-control" name="name" type="text" placeholder="Assignment Name">
             </div>
             <div class="form-group">
-              <input class="form-control" name="detail" id="detail" type="text">
+              <input class="form-control" name="link" id="link" placeholder="Link to your Assignment">
             </div>
-            <!-- Initialize Quill editor -->
+            <div class="form-group">
+              <textarea class="form-control" name="detail" id="detail" placeholder="Or paste your Assignment here"></textarea>
+            </div>
             <script>
-              var quill = new Quill('#detail', {
-                theme: 'snow'
-              });
+              CKEDITOR.replace('detail');
             </script>
             <input type="submit" class="create-task-submit btn btn-primary">
           </form>

@@ -1,6 +1,6 @@
 // config/database.js
 module.exports = {
 
-    'url' : 'mongodb://localhost/natcap'
+    'url' : 'mongodb://admin:pw@ds163020.mlab.com:63020/natcap'
 
 };
