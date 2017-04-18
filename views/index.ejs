@@ -43,8 +43,14 @@
               <input class="form-control" name="name" type="text" placeholder="Assignment Name">
             </div>
             <div class="form-group">
-              <input class="form-control" name="detail" type="text" placeholder="Link to Your Assignment">
+              <input class="form-control" name="detail" id="detail" type="text">
             </div>
+            <!-- Initialize Quill editor -->
+            <script>
+              var quill = new Quill('#detail', {
+                theme: 'snow'
+              });
+            </script>
             <input type="submit" class="create-task-submit btn btn-primary">
           </form>
         </div>
