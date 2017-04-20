@@ -200,7 +200,7 @@ app.get('/', loadStudentAssignments , function (req, res) {
     });
 
     // See assignment detail
-    app.post('/assignment/:id/view', function(req, res) {
+    app.get('/assignment/:id/view', function(req, res) {
     	Assignment.findById(req.params.id, function(err, assignmentToView) {
     		if(err || !assignmentToView) {
     			console.log('Error finding assignment on database.');
