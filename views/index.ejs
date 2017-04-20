@@ -24,7 +24,11 @@
             <% if (locals.assignment) { %>
               <% assignment.forEach(function(assignment) { %>
                 <li class="list-group-item">
-                  <span class="col-sm-6"><%=assignment.name%></span>
+                  <span class="col-sm-6">
+                    <a href="/assignment/<%=assignment.id%>/view">
+                      <%=assignment.name%>
+                    </a>
+                  </span>
                   <form class ="col-sm-3" method="post" action="/assignment/<%=assignment.id%>/delete">
                     <button type="submit" name="toggle" class="toggle btn btn-link">
                       <small>Delete</small>
@@ -40,13 +44,22 @@
           <h4>Submit a new assignment</h4>
           <form class="submitAssignment" action="/assignment/submit" method="POST">
             <div class="form-group">
-              <input class="form-control" name="name" type="text" placeholder="Assignment Name">
+              <input class="form-control" name="student" type="text" placeholder="Your name" value="<%=currentUser.name%>" required>
             </div>
             <div class="form-group">
-              <input class="form-control" name="link" id="link" placeholder="Link to your Assignment">
+              <select class="form-control" name="name" type="text" required>
+                <option value="6.3">6.3. Water Group Evaluation</option>
+                <option value="7.1">7.1. Climate SWO</option>
+                <option value="7.3">7.3. Climate Group Evaluation</option>
+                <option value="8.1">8.1. Natural Area SWO</option>
+                <option value="8.3">8.3. Natural Area Group Evaluation</option>
+              </select>
             </div>
             <div class="form-group">
-              <textarea class="form-control" name="detail" id="detail" placeholder="Or paste your Assignment here"></textarea>
+              <input class="form-control" name="comment" type="text" placeholder="Add comment" required>
+            </div>
+            <div class="form-group">
+              <textarea class="form-control" name="detail" id="detail" required></textarea>
             </div>
             <script>
               CKEDITOR.replace('detail');

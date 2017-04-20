@@ -90,75 +90,75 @@ app.get('/', loadStudentAssignments , function (req, res) {
 
   // User handle
 
-  // Login
-  app.post('/user/login', function (req, res) {
-  	var user = Users.findOne({email: req.body.email}, function(err, user) {
-  		if(err || !user) {
-  			res.render('index', {errors: "Invalid email address"});
-  			return;
-  		}
+    // Login
+    app.post('/user/login', function (req, res) {
+    	var user = Users.findOne({email: req.body.email}, function(err, user) {
+    		if(err || !user) {
+    			res.render('index', {errors: "Invalid email address"});
+    			return;
+    		}
 
-      user.comparePassword(req.body.password, function(err, isMatch) {
-  			if(err || !isMatch){
-  				res.render('index', {errors: 'Invalid password'});
-  				console.log('\n\nInvalid password.\n\n');
-  				// res.render('index', {errors: 'Invalid password'});
-  				return;
-  	   		}
-  		   	else{
-  				req.session.userId = user._id;
-  				res.redirect('/');
-  				return;
-  		   	}
+        user.comparePassword(req.body.password, function(err, isMatch) {
+    			if(err || !isMatch){
+    				res.render('index', {errors: 'Invalid password'});
+    				console.log('\n\nInvalid password.\n\n');
+    				// res.render('index', {errors: 'Invalid password'});
+    				return;
+    	   		}
+    		   	else{
+    				req.session.userId = user._id;
+    				res.redirect('/');
+    				return;
+    		   	}
 
-  		});
-  	});
+    		});
+    	});
 
-  });
+    });
 
-  // Register
-  app.post('/user/register', function (req, res) {
-    if(!validator.isEmail(req.body.email)) {
-  		return res.render('index.ejs', { errors: 'Bad email'});
-  	}
-
-    if(req.body.email.length < 1 || req.body.email.length > 50) {
-  		return res.render('index.ejs', { errors: 'Bad email'});
-  	}
-
-    if(req.body.name.length < 1 || req.body.name.length > 50) {
-      return res.render('index.ejs', { errors: 'Bad name'});
-    }
-
-    if(req.body.password.length < 1 || req.body.password.length > 50) {
-      return res.render('index.ejs', { errors: 'Bad password'});
-    }
-
-    var newUser = new Users();
-  	newUser.name = req.body.name;
-  	newUser.email = req.body.email;
-  	newUser.hashed_password = req.body.password;
-    newUser.type = "student";
-
-    newUser.save(function(err, user){
-
-      if(user && !err){
-        req.session.userId = user._id;
-        res.redirect('/');
-        return;
+    // Register
+    app.post('/user/register', function (req, res) {
+      if(!validator.isEmail(req.body.email)) {
+    		return res.render('index.ejs', { errors: 'Bad email'});
     	}
-    	var errors = "Error registering you.";
 
+      if(req.body.email.length < 1 || req.body.email.length > 50) {
+    		return res.render('index.ejs', { errors: 'Bad email'});
+    	}
+
+      if(req.body.name.length < 1 || req.body.name.length > 50) {
+        return res.render('index.ejs', { errors: 'Bad name'});
+      }
+
+      if(req.body.password.length < 1 || req.body.password.length > 50) {
+        return res.render('index.ejs', { errors: 'Bad password'});
+      }
+
+      var newUser = new Users();
+    	newUser.name = req.body.name;
+    	newUser.email = req.body.email;
+    	newUser.hashed_password = req.body.password;
+      newUser.type = "student";
+
+      newUser.save(function(err, user){
+
+        if(user && !err){
+          req.session.userId = user._id;
+          res.redirect('/');
+          return;
+      	}
+      	var errors = "Error registering you.";
+
+      });
+
+    // end of Register post
     });
 
-  // end of Register post
-  });
-
-  app.get('/user/logout', function(req, res){
-    req.session.destroy(function(){
-      res.redirect('/');
+    app.get('/user/logout', function(req, res){
+      req.session.destroy(function(){
+        res.redirect('/');
+      });
     });
-  });
 
   // Everything below this can only be done by a logged in user.
   // This middleware will enforce that.
@@ -166,45 +166,52 @@ app.get('/', loadStudentAssignments , function (req, res) {
   // Assignment Management
   app.use(isLoggedIn);
 
-  app.post('/assignment/submit', function (req, res) {
-
-    // if(req.body.name.length < 1 || req.body.name.length > 50) {
-    //   return res.render('index.ejs', { errors: 'Bad title'});
-    // }
-
-  	var newAssignment = new Assignment();
-
-  	newAssignment.owner = res.locals.currentUser;
-    newAssignment.student = res.locals.currentUser.fullName;
-  	newAssignment.name = req.body.name;
-  	newAssignment.detail = req.body.detail;
-
-    newAssignment.save(function(err, task){
-
-      if(task && !err){
-        if(err || !task) {
-    			res.render('index', { errors: 'Error saving task to the database.'} );
-    		} else {
-    			res.redirect('/');
-    		}
-      }
+    // Submit assignment
+    app.post('/assignment/submit', function (req, res) {
+    	var newAssignment = new Assignment();
+    	newAssignment.owner = res.locals.currentUser;
+      newAssignment.student = req.body.student;
+    	newAssignment.name = req.body.name;
+      newAssignment.comment = req.body.comment;
+    	newAssignment.detail = req.body.detail;
+      newAssignment.save(function(err, task) {
+        if(task && !err){
+          if(err || !task) {
+      			res.render('index', { errors: 'Error saving task to the database.'} );
+      		} else {
+      			res.redirect('/');
+      		}
+        }
+      });
     });
 
-  });
+    // Delete an assignment
+    app.post('/assignment/:id/delete', function(req, res) {
+    	Assignment.findById(req.params.id, function(err, assignmentToRemove) {
+    		if(err || !assignmentToRemove) {
+    			console.log('Error finding assignment on database.');
+    			res.redirect('/');
+    		}
+    		else {
+    			assignmentToRemove.remove();
+    			res.redirect('/');
+    		}
+    	});
+    });
 
-  app.post('/assignment/:id/delete', function(req, res) {
+    // See assignment detail
+    app.post('/assignment/:id/view', function(req, res) {
+    	Assignment.findById(req.params.id, function(err, assignmentToView) {
+    		if(err || !assignmentToView) {
+    			console.log('Error finding assignment on database.');
+    			res.redirect('/');
+    		}
+    		else {
+    			res.render('grade', { 'assignment': assignmentToView})
+    		}
+    	});
+    });
 
-  	Assignment.findById(req.params.id, function(err, assignmentToRemove) {
-  		if(err || !assignmentToRemove) {
-  			console.log('Error finding task on database.');
-  			res.redirect('/');
-  		}
-  		else {
-  			assignmentToRemove.remove();
-  			res.redirect('/');
-  		}
-  	});
-  });
 
 // server start
 app.listen(port);

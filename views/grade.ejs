@@ -1,0 +1,27 @@
+<% include header.ejs %>
+
+    <div class="col-sm-12">
+      <% if (locals.errors) { %>
+        <p class="errors alert alert-warning"><%= errors %></p>
+      <% } else { %>
+        <p class="alert alert-success">No errors so far</p>
+      <% } %>
+    </div>
+
+    <% if (locals.currentUser) { %>
+
+      <!-- Welcome message -->
+      <div class="col-sm-12">
+        <span class="welcome"> Welcome, <%= currentUser.name %>. </span>
+        <a href="/user/logout" class="logout">Logout</a>
+      </div>
+
+        <div class="row mt-4 col-sm-12">
+          <div class="col-sm-12">
+            <h4><%=assignment%></h4>
+          </div>
+        </div>
+
+    <% } %>
+
+<% include footer.ejs %>

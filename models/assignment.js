@@ -9,6 +9,7 @@ const assignmentSchema = new Schema({
   owner: ObjectId,
   student: String,
   name: String,
+  comment: String,
   detail: String,
   grade: String
 });
