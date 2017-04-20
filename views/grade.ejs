@@ -18,7 +18,11 @@
 
         <div class="row mt-4 col-sm-12">
           <div class="col-sm-12">
-            <h4><%=assignment%></h4>
+            <h4><%=assignment.name%></h4>
+            <p>By <%=assignment.student %>. Submitted on: <%=assignment.date%>.</p>
+            <% if (assignment.comment.length > 0) { %>
+              <p>Student comment: <%=assignment.comment%></p>
+            <% } %>
           </div>
         </div>
 

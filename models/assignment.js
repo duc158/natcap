@@ -11,6 +11,7 @@ const assignmentSchema = new Schema({
   name: String,
   comment: String,
   detail: String,
+  date: String,
   grade: String
 });
 

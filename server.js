@@ -174,6 +174,7 @@ app.get('/', loadStudentAssignments , function (req, res) {
     	newAssignment.name = req.body.name;
       newAssignment.comment = req.body.comment;
     	newAssignment.detail = req.body.detail;
+      newAssignment.date = new Date();
       newAssignment.save(function(err, task) {
         if(task && !err){
           if(err || !task) {
