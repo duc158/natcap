@@ -23,6 +23,14 @@
             <% if (assignment.comment.length > 0) { %>
               <p>Student comment: <%=assignment.comment%></p>
             <% } %>
+            <textarea class="form-control" name="detail" id="detail" required>
+              <%=assignment.detail%>
+            </textarea>
+            </div>
+            <script>
+              CKEDITOR.replace('detail');
+              CKEDITOR.config.readOnly = true;
+            </script>
           </div>
         </div>
 
