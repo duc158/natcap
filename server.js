@@ -89,6 +89,8 @@ app.get('/', loadStudentAssignments , function (req, res) {
 });
 
   // User handle
+
+  // Login
   app.post('/user/login', function (req, res) {
   	var user = Users.findOne({email: req.body.email}, function(err, user) {
   		if(err || !user) {
@@ -114,6 +116,7 @@ app.get('/', loadStudentAssignments , function (req, res) {
 
   });
 
+  // Register
   app.post('/user/register', function (req, res) {
     if(!validator.isEmail(req.body.email)) {
   		return res.render('index.ejs', { errors: 'Bad email'});
@@ -135,6 +138,7 @@ app.get('/', loadStudentAssignments , function (req, res) {
   	newUser.name = req.body.name;
   	newUser.email = req.body.email;
   	newUser.hashed_password = req.body.password;
+    newUser.type = "student";
 
     newUser.save(function(err, user){
 
@@ -187,20 +191,6 @@ app.get('/', loadStudentAssignments , function (req, res) {
     });
 
   });
-
-  // app.post('/tasks/:id/:action(complete|incomplete)', function(req, res) {
-  //
-  // 	Assignment.findById(req.params.id, function(err, completedTask) {
-  // 		if(err || !completedTask) {
-  //       console.log('Error finding task on database.');
-  // 			res.redirect('/');
-  // 		}
-  // 		else {
-  // 			completedTask.completeTask();
-  // 			res.redirect('/');
-  // 		}
-  // 	});
-  // });
 
   app.post('/assignment/:id/delete', function(req, res) {
 

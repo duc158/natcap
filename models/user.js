@@ -8,6 +8,7 @@ const Schema = mongoose.Schema;
 const UserSchema = new Schema({
   email: String,
   name: String,
+  type: String,
   hashed_password: String,
 });
 
