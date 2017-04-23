@@ -10,6 +10,7 @@ const assignmentSchema = new Schema({
   student: String,
   name: String,
   comment: String,
+  commentGrader: String,
   detail: String,
   date: String,
   grade: String

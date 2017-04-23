@@ -209,6 +209,26 @@ app.get('/', loadStudentAssignments, loadAllAssignments, function (req, res) {
       	});
       });
 
+    // for grader
+
+      // Grade an assignment
+      app.post('/assignment/:id/grade', function(req, res) {
+        if (res.locals.currentUser.type == "admin") {
+          Assignment.findById(req.params.id, function(err, assignmentToGrade) {
+            if(err || !assignmentToGrade) {
+              console.log('Error finding assignment on database.');
+              res.redirect('/');
+            } else {
+              assignmentToGrade.grade = req.body.grade
+              assignmentToGrade.save();
+              res.redirect('/');
+            }
+          });
+        } else {
+          res.redirect('/');
+        }
+      });
+
 
 // server start
 app.listen(port);

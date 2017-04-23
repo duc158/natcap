@@ -1,13 +1,5 @@
 <% include ./partials/header.ejs %>
 
-    <div class="col-sm-12">
-      <% if (locals.errors) { %>
-        <p class="errors alert alert-warning"><%= errors %></p>
-      <% } else { %>
-        <p class="alert alert-success">No errors so far</p>
-      <% } %>
-    </div>
-
     <% if (locals.currentUser) { %>
 
       <!-- Welcome message -->
@@ -18,8 +10,19 @@
 
         <div class="row mt-4 col-sm-12">
           <div class="col-sm-12">
-            <h4><%=assignment.name%></h4>
-            <p>By <%=assignment.student %>. Submitted on: <%=assignment.date%>.</p>
+            <form class="form-inline" action="/assignment/<%=assignment.id%>/grade" method="POST">
+              <input class="form-control mb-2 mr-sm-2 mb-sm-0 col-sm-1" name="grade" placeholder="Grade">
+              <input class="form-control mb-2 mr-sm-2 mb-sm-0 col-sm-10" name="commentGrader" placeholder="Comment">
+              <input type="submit" class="btn btn-primary">
+            </form>
+            <p><b><%=assignment.name%>. By <%=assignment.student %>.</b></p>
+            <p>Submitted on:
+              <%
+              var dt = new Date(assignment.date);
+              var dt = dt.toLocaleString ('en-us', {year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'});
+              %>
+              <%=dt%>.
+            </p>
             <% if (assignment.comment.length > 0) { %>
               <p>Student comment: <%=assignment.comment%></p>
             <% } %>
