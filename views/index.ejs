@@ -1,4 +1,4 @@
-<% include header.ejs %>
+<% include ./partials/header.ejs %>
 
     <div class="col-sm-12">
       <% if (locals.errors) { %>
@@ -25,7 +25,7 @@
               <% assignment.forEach(function(assignment) { %>
                 <li class="list-group-item">
                   <span class="col-sm-6">
-                    <a href="/assignment/<%=assignment.id%>/view">
+                    <a href="/assignment/<%=assignment.id%>/detail">
                       <%=assignment.name%>
                     </a>
                   </span>
@@ -112,4 +112,4 @@
     <% } %>
   </div>
 
-<% include footer.ejs %>
+<% include ./partials/footer.ejs %>

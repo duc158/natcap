@@ -201,14 +201,14 @@ app.get('/', loadStudentAssignments , function (req, res) {
     });
 
     // See assignment detail
-    app.get('/assignment/:id/view', function(req, res) {
+    app.get('/assignment/:id/detail', function(req, res) {
     	Assignment.findById(req.params.id, function(err, assignmentToView) {
     		if(err || !assignmentToView) {
     			console.log('Error finding assignment on database.');
     			res.redirect('/');
     		}
     		else {
-    			res.render('grade', { 'assignment': assignmentToView})
+    			res.render('detail', { 'assignment': assignmentToView})
     		}
     	});
     });
