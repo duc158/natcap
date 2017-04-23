@@ -1,0 +1,33 @@
+<% include ./partials/header.ejs %>
+
+    <% if (locals.currentUser.type == "admin") { %>
+
+      <!-- Welcome message -->
+      <div class="col-sm-12">
+        <p>
+          Welcome <%= currentUser.name %>. <a href="/user/logout" class="logout">Logout</a>
+        </p>
+      </div>
+
+      <div class="col-sm-12">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Assignment</th>
+              <th>Student</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <% assignment.forEach(function(assignment) { %>
+            <tr>
+              <td><a href="/assignment/<%=assignment.id%>/detail"><%=assignment.name%></a></td>
+              <td><%=assignment.student%></td>
+              <td><%=assignment.grade%></td>
+            </tr>
+          <% }); %>
+        </table>
+      </div>
+
+    <% } %>
+
+<% include ./partials/footer.ejs %>
