@@ -72,17 +72,17 @@ const store = new MongoDBStore({
     }
 
     // load all submitted assignment
-    function loadAssignments(req, res, next) {
+    function loadAllAssignments(req, res, next) {
     	Assignment.find(function(err, assignment) {
         if(!err) {
-      		res.locals.assignment = assignment;
+          res.locals.allAssignment = assignment;
       	}
         next();
       });
     }
 
 // user route
-app.get('/', loadStudentAssignments, function (req, res) {
+app.get('/', loadStudentAssignments, loadAllAssignments, function (req, res) {
   res.render('index');
 });
 
@@ -161,17 +161,6 @@ app.get('/', loadStudentAssignments, function (req, res) {
   // Assignment Management
   app.use(isLoggedIn);
 
-  // for grader
-
-    // see assignments
-    app.get('/admin', loadAssignments,function (req, res) {
-      if (res.locals.currentUser.type == "admin") {
-        res.render('admin');
-      } else {
-        res.redirect('/');
-      }
-    });
-
     // for student
 
       // Submit assignment
@@ -182,6 +171,7 @@ app.get('/', loadStudentAssignments, function (req, res) {
       	newAssignment.name = req.body.name;
         newAssignment.comment = req.body.comment;
       	newAssignment.detail = req.body.detail;
+        newAssignment.grade = "NA";
         newAssignment.date = new Date();
         newAssignment.save(function(err, assignment) {
           if(err || !assignment) {
